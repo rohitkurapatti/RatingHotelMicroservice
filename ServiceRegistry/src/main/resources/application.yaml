@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: ServiceRegistry
+
+eureka:
+  instance:
+    hostname: localhost
+# We need to make fetch and register false, since this is a server and not a client so it should not register itself
+# in the service registery instead other services will register itself
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+
+server:
+  port: 8761
+
