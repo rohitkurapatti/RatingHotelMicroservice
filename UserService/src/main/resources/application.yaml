@@ -14,6 +14,17 @@ spring:
     import: optional:configserver:http://localhost:8085
 server:
   port: 8081
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health, circuitbreakers, circuitbreakerevents
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 
 #Eureka Client Configuration
@@ -30,6 +41,35 @@ service:
   url:
     ratingservice: http://RATINGSERVICE/ratings/users/
 #    hotelservice: http://HOTELSERVICE/hotels
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelFallback:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 60s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: COUNT_BASED
+
+#  Setting	Meaning
+#  registerHealthIndicator	Shows CB status in /actuator/health
+#  eventConsumerBufferSize	Store last 10 events
+#  failureRateThreshold	Open circuit if 50% failures
+#  minimumNumberOfCalls	Need at least 5 calls before checking failures
+#  automaticTransition…	Auto move OPEN → HALF_OPEN
+#  waitDurationInOpenState	Stay open for 6 seconds
+#  permittedNumber…	Allow 3 calls in HALF_OPEN
+#  slidingWindowSize	Track last 10 calls
+#  slidingWindowType	Based on call count (not time)
+
+
+
 
 
 
