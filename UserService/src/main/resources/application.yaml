@@ -21,7 +21,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, circuitbreakers, circuitbreakerevents
+        include: health, circuitbreakers, circuitbreakerevents, ratelimiters
   endpoint:
     health:
       show-details: ALWAYS
@@ -56,6 +56,19 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-size: 10
         sliding-window-type: COUNT_BASED
+  retry:
+    instances:
+      ratingHotelRetryService:
+        max-attempts: 10
+        wait-duration: 4s
+
+  ratelimiter:
+    instances:
+      userRateLimiter:
+        limit-refresh-period: 4s
+        limit-for-period: 2
+        timeout-duration: 0s
+
 
 #  Setting	Meaning
 #  registerHealthIndicator	Shows CB status in /actuator/health
@@ -67,6 +80,7 @@ resilience4j:
 #  permittedNumber…	Allow 3 calls in HALF_OPEN
 #  slidingWindowSize	Track last 10 calls
 #  slidingWindowType	Based on call count (not time)
+
 
 
 

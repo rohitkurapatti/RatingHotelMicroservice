@@ -7,6 +7,7 @@ import com.lcwd.user.service.exceptions.ResourceNotFoundException;
 import com.lcwd.user.service.externalservices.HotelService;
 import com.lcwd.user.service.repositories.UserRepository;
 import com.lcwd.user.service.services.UserService;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+
+    int retryCount = 1;
 
     @Value("${service.url.ratingservice}")
     private String ratingURL;
@@ -53,15 +56,22 @@ public class UserServiceImpl implements UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+/*
+    @Retry(name = "ratingHotelRetryService")
+    public Rating[] getRatingsFromService(String userId) {
+        return restTemplate.getForObject(ratingURL + userId, Rating[].class);
+    }*/
 
     @Override
     public User getUserOfId(String userId) {
+        retryCount++;
+        log.info("Retry count : {} ", retryCount);
         //Get user from database
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User with given id : " + userId + " not found in database"));
 
         //Fetch rating from rating serivice, which is registered in eureka server
-        Rating[] ratingsListOfUser = restTemplate.getForObject(ratingURL + user.getUserId(), Rating[].class);
+        Rating[] ratingsListOfUser = restTemplate.getForObject(ratingURL + userId, Rating[].class);
         log.info("{}", ratingsListOfUser);
 
         List<Rating> ratings = Arrays.stream(ratingsListOfUser).toList();
