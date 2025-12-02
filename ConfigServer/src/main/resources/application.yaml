@@ -1,3 +1,15 @@
 spring:
   application:
-    name: ConfigServer
+    name: Config-Server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/rohitkurapatti/spring-microservices-configuration
+          clone-on-start: true
+          refresh-rate: 15
+
+
+server:
+  port: 8085
+

@@ -5,6 +5,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/microservices
     username: postgres
     password: root
+  config:
+    import: optional:configserver://config-server
 
   jpa:
     hibernate:
@@ -14,12 +16,12 @@ server:
   port: 8082
 
 #Eureka Client Configuration
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
 
